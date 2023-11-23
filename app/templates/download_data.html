@@ -1,0 +1,31 @@
+{% load static %}
+
+<html>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/lz-string.min.js' %}"></script>
+    <script>
+      // Crear un endpoint para retraer los datos guardados en redis desde el cliente navegador.
+      $.ajax({
+        url: "{% url 'app:get_sales_data_api' %}",
+        type: 'GET',
+        dataType: 'json', // added data type
+        success: function (res) {
+
+          // Guardar los datos comprimidos en localstorage.
+          localStorage.setItem('data', res.message);
+          
+          // A medida que se retrae los datos del localstorage con getItem, descomprimir los datos.
+          let dataCompressed = localStorage.getItem('data')
+          let data = LZString.decompressFromUTF16(res.message);
+          console.log(data);
+          alert("exito");
+        }
+      });
+    </script>
+  </body>
+
+</html>
