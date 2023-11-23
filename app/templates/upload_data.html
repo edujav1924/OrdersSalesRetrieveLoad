@@ -1,0 +1,94 @@
+{% load static %}
+
+<html>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/lz-string.min.js' %}"></script>
+    <script>
+      //Crear una estructura de objecto javascript que contenga los datos de carga de un pedido (Modelo Orders).
+      const orders = {
+        1: [{
+          artobj_id: 1,
+          precio_unitario: 2000.0,
+          cantidad: 15,
+          cantidad_original: 100,
+          iva_10: 10.0,
+          iva_5: 5.0,
+          gravada_5: 5.0,
+          gravada_10: 67,
+          exenta: 0.0,
+        }, {
+          artobj_id: 2,
+          precio_unitario: 1500.0,
+          cantidad: 20,
+          cantidad_original: 50,
+          iva_10: 8.0,
+          iva_5: 0.0,
+          gravada_5: 0.0,
+          gravada_10: 66,
+          exenta: 0.0,
+        }],
+        2: [{
+          artobj_id: 1,
+          precio_unitario: 1800.0,
+          cantidad: 10,
+          cantidad_original: 30,
+          iva_10: 9.0,
+          iva_5: 0.0,
+          gravada_5: 0.0,
+          gravada_10: 60,
+          exenta: 0.0,
+        }, {
+          artobj_id: 3,
+          precio_unitario: 2500.0,
+          cantidad: 8,
+          cantidad_original: 10,
+          iva_10: 12.0,
+          iva_5: 0.0,
+          gravada_5: 0.0,
+          gravada_10: 623,
+          exenta: 0.0,
+        }],
+        3: [{
+          artobj_id: 2,
+          precio_unitario: 1200.0,
+          cantidad: 25,
+          cantidad_original: 50,
+          iva_10: 6.0,
+          iva_5: 0.0,
+          gravada_5: 0.0,
+          gravada_10: 675,
+          exenta: 0.0,
+        }]
+      };
+      //Convertir este objecto a JSON.
+      let ordersJson = JSON.stringify(orders);
+      //Comprimir el JSON con lzstring.
+      let data = LZString.compressToUTF16(ordersJson);
+      //Guardar en el localstorage.
+      localStorage.setItem("orders", data);
+
+      //Traer los datos del orders guardado con getItem.
+      let localstorageOrders = localStorage.getItem("orders");
+      if (localstorageOrders) {
+
+        //Enviarlo a un endpoint en el BE.
+        $.ajax({
+          url: "{% url 'app:save_orders_api' %}",
+          type: "POST",
+          data: {
+            orders: localstorageOrders
+          },
+          success: function (res) {
+            alert(res.message);
+          }
+        });
+      }
+
+    </script>
+  </body>
+
+</html>
